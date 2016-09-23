@@ -1,8 +1,5 @@
 package cn.itcast.test;
 
-import static org.junit.Assert.*;
-
-import javax.annotation.Resource;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

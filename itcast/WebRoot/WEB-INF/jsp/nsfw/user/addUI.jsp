@@ -4,6 +4,56 @@
     <%@include file="/common/header.jsp"%>
     <title>用户管理</title>
     <script type="text/javascript" src="${basePath }js/datepicker/WdatePicker.js"></script>
+    <script type="text/javascript">
+    	var vResult = false;
+    	//校验账号唯一
+    	function doVerify() {
+    		//1、获取账号
+    		var account = $("#account").val();
+    		if (account != "") {
+    			//2、校验
+    			$.ajax({
+    				url: "${basePath}nsfw/user_verifyAccount.action",
+    				data: {"user.account": account},
+    				type: "post",
+    				async: false,//非异步
+    				success: function(msg) {
+    					if ("true" != msg) {
+    						//账号已存在
+    						alert("账号已经存在，请使用其他账户");
+    						//定焦
+    						${"#account"}.focus();
+    						vResult = false;
+    					} else {
+    						vResult = true;
+    					}
+    				}
+    			});
+    		}
+    	}
+    	//提交表单
+    	function doSubmit() {
+    		var name = $("#name");
+    		if (name.val() == "") {
+    			alert("用户名不能为空！");
+    			name.focus();
+    			return false;
+    		} 
+    		var password = $("#password");
+    		if (password.val() == "") {
+    			alert("密码不能为空");
+    			password.focus();
+    			return false;
+    		}
+    		//账号校验
+    		doVerify();
+    		if (vResult) {
+    			//提交表单
+    			document.forms[0].submit();
+    		}
+    	}
+    
+    </script>
 </head>
 <body class="rightBody">
 <form id="form" name="form" action="${basePath }nsfw/user_add.action" method="post" enctype="multipart/form-data">
@@ -65,7 +115,7 @@
         </tr>
     </table>
     <div class="tc mt20">
-        <input type="submit" class="btnB2" value="保存" />
+        <input type="submit" class="btnB2" value="保存" onClick="doSubmit()"/>
         &nbsp;&nbsp;&nbsp;&nbsp;
         <input type="button"  onclick="javascript:history.go(-1)" class="btnB2" value="返回" />
     </div>

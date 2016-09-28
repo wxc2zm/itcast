@@ -2,6 +2,7 @@ package cn.itcast.nsfw.user.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class User implements Serializable {
 
@@ -20,6 +21,7 @@ public class User implements Serializable {
 	public String email;
 	public Date birthday;
 	public String memo;
+	private List<UserRole> userRoles;
 	
 	public static String USER_STATE_VALID = "1";
 	public static String USER_STATE_INVALID = "0";
@@ -141,5 +143,10 @@ public class User implements Serializable {
 	public void setMemo(String memo) {
 		this.memo = memo;
 	}
-	
+	public List<UserRole> getUserRoles() {
+		return userRoles;
+	}
+	public void setUserRoles(List<UserRole> userRoles) {
+		this.userRoles = userRoles;
+	}
 }

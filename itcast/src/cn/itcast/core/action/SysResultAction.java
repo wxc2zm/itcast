@@ -10,15 +10,19 @@ import com.opensymphony.xwork2.ActionInvocation;
 
 public abstract class SysResultAction extends StrutsResultSupport {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
-	protected void doExecute(String arg0, ActionInvocation arg1)
+	protected void doExecute(String arg0, ActionInvocation invocation)
 			throws Exception {
 		// TODO Auto-generated method stub
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
-		BaseAction action = (BaseAction) arg1.getAction();
-		
-		System.out.println("进入了 SysResultAction ...");
+		@SuppressWarnings("unused")
+		BaseAction action = (BaseAction) invocation.getAction();
+		//do something....
+		response.sendRedirect(request.getContextPath() + "/sys/login_toLoginUI.action");
+		//System.out.println("进入了 SysResultAction ...");
 	}
 
 }

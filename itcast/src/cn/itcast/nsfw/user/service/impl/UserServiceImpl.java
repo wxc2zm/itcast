@@ -22,32 +22,40 @@ import org.springframework.stereotype.Service;
 
 
 
+
+
+
+
+
+import cn.itcast.core.service.impl.BaseServiceImpl;
 import cn.itcast.core.util.ExcelUtil;
+import cn.itcast.nsfw.role.entity.Role;
 import cn.itcast.nsfw.user.dao.UserDao;
 import cn.itcast.nsfw.user.entity.User;
+import cn.itcast.nsfw.user.entity.UserRole;
+import cn.itcast.nsfw.user.entity.UserRoleId;
 import cn.itcast.nsfw.user.service.UserService;
 @Service("userService")
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends BaseServiceImpl<User> implements UserService {
 	
-	@Resource
+	
 	private UserDao userDao;
 	
-	@Override
-	public void save(User user) {
-		// TODO Auto-generated method stub
-		userDao.save(user);
+	/*
+	 * 通过自动注入UserDao的同时，将userDao传递给baseServiceImpl转换为BaseDao
+	 */
+	@Resource
+	public void setUserDao(UserDao userDao) {
+		super.setBaseDao(userDao);
+		this.userDao = userDao;
 	}
-
-	@Override
-	public void update(User user) {
-		// TODO Auto-generated method stub
-		userDao.update(user);
-	}
-
+	
 	@Override
 	public void delete(Serializable id) {
 		// TODO Auto-generated method stub
 		userDao.delete(id);
+		//删除用户对应的所有权限
+		userDao.deleteUserRoleByUserId(id);
 	}
 
 	@Override
@@ -69,6 +77,7 @@ public class UserServiceImpl implements UserService {
 		ExcelUtil.exportUserExcel(userList, outputStream);
 	}
 
+	@SuppressWarnings("static-access")
 	@Override
 	public void importExcel(File userExcel, String userExcelFileName) {
 		// TODO Auto-generated method stub
@@ -133,8 +142,43 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<User> findUserByAccountAndId(String id, String account) {
-		// TODO Auto-generated method stub
 		return userDao.findUserByAccountAndId(id, account);
+	}
+
+	@Override
+	public void saveUserAndRole(User user, String... roleIds) {
+		//1、保存用户
+		save(user);
+		//2、保存用户对应的角色
+		if (roleIds != null) {
+			for (String roleId: roleIds) {
+				userDao.saveUserRole(new UserRole(new UserRoleId(new Role(roleId), user.getId())));
+			}
+		}
+	}
+
+	@Override
+	public void updateUserAndRole(User user, String... roleIds) {
+		//1、根据用户删除该用户的所有角色
+		userDao.deleteUserRoleByUserId(user.getId());
+		//2、更新用户
+		update(user);
+		//3、保存用户对应的角色
+		if (roleIds != null) {
+			for (String roleId: roleIds) {
+				userDao.saveUserRole(new UserRole(new UserRoleId(new Role(roleId), user.getId())));
+			}
+		}
+	}
+
+	@Override
+	public List<UserRole> getUserRolesByUserId(String id) {
+		return userDao.getUserRoleByUserId(id);
+	}
+
+	@Override
+	public List<User> findUserByAccountAndPass(String account, String password) {
+		return userDao.findUsersByAccountAndPass(account, password);
 	}
 
 	

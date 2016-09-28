@@ -44,7 +44,7 @@
     	<property name="mappingLocations">
     		<list>
     			<value>classpath:cn/itcast/test/entity/*.hbm.xml</value>
-    			<value>classpath:cn/itcast/nsfw/user/entity/*.hbm.xml</value>
+    			<value>classpath:cn/itcast/nsfw/*/entity/*.hbm.xml</value>
     		</list>
     	</property>
     </bean>
@@ -69,8 +69,10 @@
     	<aop:advisor advice-ref="txAdvice" pointcut-ref="serviceOperation"/>
     </aop:config>
     <!-- 上面的pointcut  expression 表示拦截以Service结尾的bean，或者可写成execution(* cn.itcast..service.impl.*.*(..)) -->
-    
+    <!-- 所有业务dao的parent -->
     <bean name="baseDao" abstract="true">
     	<property name="sessionFactory" ref="sessionFactory"></property>
     </bean>
+    <!-- 权限鉴定类 -->
+    <bean id="permissionCheck" class="cn.itcast.core.permission.impl.PermissionCheckImpl"></bean>
 </beans>
